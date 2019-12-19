@@ -10,7 +10,7 @@ from ryu.lib.packet import ether_types
 # As regras abaixo funcionam para uma rede de 2 switches
 # sendo que cada switch possui um host ligado a si
 
-TOPOLOGIA = {
+TOPOLOGY = {
 	"00:00:00:00:00:01": {
         "00:00:00:00:00:02": {
             1: {'in_port': 1, 'out_port': 2},
@@ -92,19 +92,19 @@ class SimpleScenario13(app_manager.RyuApp):
             # ignore lldp packet
             return
 
-        # cria um "flow" a partir da topologia de rede
+        # cria um "flow" (regra) a partir da topologia de rede
         dst = eth.dst # nó de destino
         src = eth.src # nó de origem
         dpid = datapath.id # identificador do switch 
 
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
-        if src in TOPOLOGIA:
-            if dst in TOPOLOGIA[src]:
-                if dpid in TOPOLOGIA[src][dst]:
-                    if in_port == TOPOLOGIA[src][dst][dpid]['in_port']:
+        if src in TOPOLOGY:
+            if dst in TOPOLOGY[src]:
+                if dpid in TOPOLOGY[src][dst]:
+                    if in_port == TOPOLOGY[src][dst][dpid]['in_port']:
                         match = parser.OFPMatch(in_port=in_port, eth_src=src, eth_dst=dst)
-                        out_port = TOPOLOGIA[src][dst][dpid]['out_port']
+                        out_port = TOPOLOGY[src][dst][dpid]['out_port']
                         actions = [parser.OFPActionOutput(out_port)]
                         # verifica se existe um id válido, para evitar o envio de
                         # flow_mod e packet_out
